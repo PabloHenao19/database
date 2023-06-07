@@ -1,16 +1,22 @@
 <?php
 //Con el metodo require se llama el archivo database.php
-  require 'database.php';
+require 'database.php';
 
-  //validación del formulario
-  if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['confirm_password'])) {
+//validación del formulario
+if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['confirm_password'])) {
+  // Verificar si las contraseñas coinciden
+  if ($_POST['password'] !== $_POST['confirm_password']) {
+    $message = 'Las contraseñas no coinciden';
+  } else {
     // Verificar si el correo electrónico ya existe en la base de datos
     $existingEmail = $_POST['email'];
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':email', $existingEmail);
     $stmt->execute();
-    
+
+    // Si la consulta devuelve algún resultado (es decir, si rowCount() es mayor que 0),
+    // se establece un mensaje de error indicando que el correo electrónico ya está registrado.
     if ($stmt->rowCount() > 0) {
       $message = 'El correo electrónico ya está registrado';
     } else {
@@ -18,19 +24,22 @@
       $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
       $stmt = $conn->prepare($sql);
       $stmt->bindParam(':email', $_POST['email']);
+
+      // password_hash crea una contraseña encriptada y segura
       $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
       $stmt->bindParam(':password', $password);
-  
+
       if ($stmt->execute()) {
         $message = 'USUARIO CREADO CON ÉXITO';
       } else {
         $message = 'ERROR DE CONEXIÓN';
       }
     }
-  } else {
-    $message = 'Por favor, completa todos los campos';
   }
-  ?>
+} else {
+  $message = 'Por favor, completa todos los campos';
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,7 +51,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<!-- Esta línea de código verifica si la variable $message no está vacía. Si $message contiene un mensaje 
+(es decir, no está vacío), se ejecuta el bloque de código que sigue a continuación.-->
 <?php if(!empty($message)): ?>
   <p> <?= $message ?></p>
 <?php endif; ?>
