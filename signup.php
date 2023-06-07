@@ -4,8 +4,15 @@
 
   //validación del formulario
   if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['confirm_password'])) {
-    if ($_POST['password'] !== $_POST['confirm_password']) {
-      $message = 'Las contraseñas no coinciden';
+    // Verificar si el correo electrónico ya existe en la base de datos
+    $existingEmail = $_POST['email'];
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':email', $existingEmail);
+    $stmt->execute();
+    
+    if ($stmt->rowCount() > 0) {
+      $message = 'El correo electrónico ya está registrado';
     } else {
       // Continuar con la inserción en la base de datos
       $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
@@ -23,7 +30,6 @@
   } else {
     $message = 'Por favor, completa todos los campos';
   }
-
   ?>
 
 <!DOCTYPE html>
