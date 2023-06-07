@@ -1,20 +1,28 @@
 <?php
-
+//Con el metodo require se llama el archivo database.php
   require 'database.php';
-  if (!empty($_POST['email']) && !empty($_POST['password'])) {
-    $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':email', $_POST['email']);
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    $stmt->bindParam(':password', $password);
 
-    if ($stmt->execute()) {
-      $message = 'USUARIO CREADO CON EXTIO';
+  //validación del formulario
+  if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['confirm_password'])) {
+    if ($_POST['password'] !== $_POST['confirm_password']) {
+      $message = 'Las contraseñas no coinciden';
     } else {
-      $message = 'ERROR DE CONEXIÓN';
+      // Continuar con la inserción en la base de datos
+      $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(':email', $_POST['email']);
+      $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+      $stmt->bindParam(':password', $password);
+  
+      if ($stmt->execute()) {
+        $message = 'USUARIO CREADO CON ÉXITO';
+      } else {
+        $message = 'ERROR DE CONEXIÓN';
+      }
     }
+  } else {
+    $message = 'Por favor, completa todos los campos';
   }
-
 
   ?>
 
