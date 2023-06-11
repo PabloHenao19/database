@@ -1,6 +1,7 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
 
 require 'PHPMailer-master/src/PHPMailer.php';
 require 'PHPMailer-master/src/Exception.php';
@@ -38,10 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Configurar el correo electrónico
       $mail = new PHPMailer();
       $mail->isSMTP();
-      $mail->Host = 'smtp.example.com'; // Configura el servidor SMTP que utilizarás
+      $mail->Host = 'smtp.office365.com'; // Configura el servidor SMTP que utilizarás
       $mail->SMTPAuth = true;
-      $mail->Username = 'tu_correo@example.com'; // Coloca aquí tu dirección de correo electrónico
-      $mail->Password = 'tu_contraseña'; // Coloca aquí tu contraseña de correo electrónico
+      $mail->Username = 'outlook_B45E4E5D348300C0@outlook.com'; // Coloca aquí tu dirección de correo electrónico
+      $mail->Password = 'PabloHenao19'; // Coloca aquí tu contraseña de correo electrónico
       $mail->SMTPSecure = 'tls';
       $mail->Port = 587;
 
@@ -51,6 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $mail->isHTML(true);
       $mail->Subject = 'Restablecimiento de contraseña';
       $mail->Body = "Haz clic en el siguiente enlace para restablecer tu contraseña: <a href='$resetLink'>$resetLink</a>";
+
+      // Habilitar la depuración
+      $mail->SMTPDebug = SMTP::DEBUG_SERVER;
 
       // Envía el correo electrónico
       if ($mail->send()) {
@@ -89,5 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="email" name="email" required>
     <button type="submit">Enviar</button>
   </form>
+  <?php
+  if (isset($_SESSION['error'])) {
+    echo '<p style="color: red;">' . $_SESSION['error'] . '</p>';
+    unset($_SESSION['error']);
+  }
+  ?>
 </body>
 </html>
