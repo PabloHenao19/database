@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $query->execute();
 
       // Enviar correo electrónico al usuario con el enlace para restablecer la contraseña
-      $resetLink = "https://example.com/reset_password.php?token=$token";
+      $resetLink = "https://example.com/ResetPassword.php?token=$token";
 
       // Configurar el correo electrónico
       $mail = new PHPMailer();

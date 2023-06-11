@@ -4,9 +4,12 @@ require 'database.php';
 
 //validación del formulario
 if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['confirm_password'])) {
+  
   // Verificar si las contraseñas coinciden
+
   if ($_POST['password'] !== $_POST['confirm_password']) {
-    $message = 'Las contraseñas no coinciden';
+    
+    echo "<script>alert('Las contraseñas no coinciden');</script>";
   } else {
     // Verificar si el correo electrónico ya existe en la base de datos
     $existingEmail = $_POST['email'];
@@ -18,7 +21,8 @@ if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['conf
     // Si la consulta devuelve algún resultado (es decir, si rowCount() es mayor que 0),
     // se establece un mensaje de error indicando que el correo electrónico ya está registrado.
     if ($stmt->rowCount() > 0) {
-      $message = 'El correo electrónico ya está registrado';
+  
+      echo "<script>alert('El correo electrónico ya está registrado');</script>";
     } else {
       // Continuar con la inserción en la base de datos
       $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
@@ -31,8 +35,10 @@ if (!empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['conf
 
       if ($stmt->execute()) {
         $message = 'USUARIO CREADO CON ÉXITO';
+        echo "<script>alert('USUARIO CREADO CON ÉXITO');</script>";
       } else {
         $message = 'ERROR DE CONEXIÓN';
+        echo "<script>alert('ERROR DE CONEXIÓN');</script>";
       }
     }
   }

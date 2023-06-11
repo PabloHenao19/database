@@ -1,16 +1,16 @@
 <?php
-// Esto permite mantener y utilizar variables de sesión en el sitio web.
+// función para iniciar o reanudar una sesión existente.
 session_start();
 
+// Comprobar si ya hay una sesión iniciada
 if (isset($_SESSION['user_id'])) {
   header("Location: index.php");
   exit();
-   
 }
-
+// llamar a la base de datos
 require 'database.php';
 
-// Se verifica si se han enviado los campos de correo electrónico a través del formulario de inicio de sesión.
+// Comprobar si se han enviado los campos de correo electrónico y contraseña a través del formulario de inicio de sesión
 if (!empty($_POST['email']) && !empty($_POST['password'])) {
     $records = $conn->prepare('SELECT id, email, password FROM users WHERE email = :email');
     $records->bindParam(':email', $_POST['email']);
@@ -19,19 +19,19 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
 
     $message = '';
 
-    // La función password_verify verifica si una contraseña ingresada por el usuario coincide
-    if (count($results) > 0 && password_verify($_POST['password'], $results['password'])) {
+    // Verificar si se encontraron resultados y si la contraseña coincide
+    if ($results !== false && password_verify($_POST['password'], $results['password'])) {
         $_SESSION['user_id'] = $results['id'];
-        // Aquí se redirecciona al usuario
         header("Location: index.php");
         exit(); 
         
     } else {
+        //integración con js para generar la alerta en cual caso erroneo
         $message = 'Correo o Contraseña incorrectos';
+        echo "<script>alert('Correo o Contraseña incorrectos');</script>";
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,15 +44,15 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
 </head>
 <body>
 <?php if(!empty($message)): ?>
-      <p> <?= $message ?></p>
-    <?php endif; ?>
+    <script>alert('Correo o Contraseña incorrectos');</script>
+<?php endif; ?>
 
 <h1>LOGIN</h1>
 <span>or <a href="signup.php">SignUp</a></span>
     <form action="login.php" method="post">
-<input type="text" name="email" placeholder="Ingresar correo">
-<input type="password" name="password" placeholder="Ingresar contraseña">
-<input type="submit" value="Send">
+        <input type="text" name="email" placeholder="Ingresar correo">
+        <input type="password" name="password" placeholder="Ingresar contraseña">
+        <input type="submit" value="Send">
     </form>
     <a href="ForgotPassword.php">¿Olvidaste tu contraseña?</a>
 </body>
